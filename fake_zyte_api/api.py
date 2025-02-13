@@ -28,6 +28,9 @@ async def handle_request(request_data: dict[str, Any]) -> dict[str, Any]:
         body_b64 = b64encode(website_response_body).decode()
         response_data["httpResponseBody"] = body_b64
 
+    if "browserHtml" in request_data:
+        response_data["browserHtml"] = website_response_body.decode(resp.get_encoding())
+
     if "jobPostingNavigation" in request_data:
         web_poet_response = HttpResponse(url, website_response_body)
         job_posting_nav_page = TestJobPostingNavigationPage(web_poet_response)
