@@ -13,6 +13,12 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture
+async def api_server(aiohttp_server: AiohttpServer) -> TestServer:
+    app = make_app()
+    return await aiohttp_server(app)
+
+
+@pytest.fixture
 async def api_client(
     aiohttp_client: AiohttpClient,
 ) -> TestClient[Request, Application]:
