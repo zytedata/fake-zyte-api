@@ -30,6 +30,15 @@ async def test_response_body(zyte_api_client, jobs_website):
     assert 'href="/jobs/4?page=2">Next' in text
 
 
+async def test_browser_html(zyte_api_client, jobs_website):
+    url = str(jobs_website.make_url("/jobs/4"))
+    response_data = await zyte_api_client.get({"url": url, "browserHtml": True})
+    assert response_data["url"] == url
+
+    assert "browserHtml" in response_data
+    assert "<h1>109 jobs in Energy:</h1>" in response_data["browserHtml"]
+
+
 async def test_extract_job_posting(zyte_api_client, jobs_website):
     url = str(jobs_website.make_url("/job/1888448280485890"))
     response_data = await zyte_api_client.get(

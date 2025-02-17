@@ -22,6 +22,7 @@ async def handle_request(request_data: dict[str, Any]) -> dict[str, Any]:
     }
 
     async with aiohttp.ClientSession() as session, session.get(url) as resp:
+        response_data["statusCode"] = resp.status
         website_response_body = await resp.read()
 
     if "httpResponseBody" in request_data:
