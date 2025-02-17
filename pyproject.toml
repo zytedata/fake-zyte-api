@@ -9,6 +9,10 @@ authors = [{name = "Zyte Group Ltd", email = "info@zyte.com"}]
 readme = "README.rst"
 dependencies = [
     "aiohttp >= 3.9.0",
+    "itemadapter >= 0.8.0",
+    "web-poet >= 0.14.0",
+    "zyte-common-items >= 0.24.0",
+    "zyte-test-websites @ git+https://github.com/zytedata/zyte-test-websites@main",
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -36,6 +40,10 @@ version = {attr = "fake_zyte_api.__version__"}
 
 [tool.setuptools.package-data]
 fake_zyte_api = ["py.typed"]
+
+[[tool.mypy.overrides]]
+module = "zyte_api"
+ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = "tests.*"
@@ -149,7 +157,7 @@ ignore = [
     # Magic value used in comparison
     "PLR2004",
     # Use of `assert` detected
-    "S101"
+    "S101",
 ]
 
 [tool.ruff.lint.pydocstyle]
