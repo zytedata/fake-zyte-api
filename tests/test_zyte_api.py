@@ -63,6 +63,7 @@ async def test_extract_job_posting(zyte_api_client, jobs_website):
     )
     assert job_posting == {
         "url": url,
+        "jobPostingId": "1888448280485890",
         "datePublished": "2023-09-07T00:00:00Z",
         "datePublishedRaw": "Sep 07, 2023",
         "jobTitle": "Litigation Attorney",
