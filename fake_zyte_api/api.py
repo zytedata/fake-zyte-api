@@ -25,6 +25,10 @@ async def handle_request(request_data: dict[str, Any]) -> dict[str, Any]:
         response_data["statusCode"] = resp.status
         website_response_body = await resp.read()
 
+    if "httpResponseHeaders" in request_data:
+        headers = [{"name": k, "value": v} for k, v in resp.headers.items()]
+        response_data["httpResponseHeaders"] = headers
+
     if "httpResponseBody" in request_data:
         body_b64 = b64encode(website_response_body).decode()
         response_data["httpResponseBody"] = body_b64

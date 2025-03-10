@@ -56,6 +56,26 @@ async def test_response_body(api_client, jobs_website):
     assert 'href="/jobs/4?page=2">Next' in text
 
 
+async def test_response_headers(api_client, jobs_website):
+    url = str(jobs_website.make_url("/jobs/4"))
+    response = await get_api_response(
+        api_client,
+        {
+            "url": url,
+            "httpResponseHeaders": True,
+        },
+    )
+    assert response.status == 200
+    response_data = await response.json()
+    assert response_data["url"] == url
+    assert response_data["statusCode"] == 200
+    assert "httpResponseHeaders" in response_data
+    for header in response_data["httpResponseHeaders"]:
+        if header["name"] == "Content-Type":
+            assert header["value"] == "text/html; charset=utf-8"
+            break
+
+
 async def test_browser_html(api_client, jobs_website):
     url = str(jobs_website.make_url("/jobs/4"))
     response = await get_api_response(
