@@ -125,3 +125,198 @@ async def test_extract_job_posting_nav(zyte_api_client, jobs_website):
             "dateDownloaded": job_posting_navigation["metadata"]["dateDownloaded"]
         },
     }
+
+
+async def test_extract_product(zyte_api_client, ecommerce_website):
+    url = ecommerce_website.make_url("/product/1000")
+    response_data = await zyte_api_client.get(
+        {
+            "url": str(url),
+            "httpResponseBody": True,
+            "product": True,
+        },
+    )
+
+    assert "httpResponseBody" in response_data
+    text = b64decode(response_data["httpResponseBody"]).decode("utf-8")
+    assert "<h1>A Light in the Attic</h1>" in text
+
+    assert "product" in response_data
+    product = response_data["product"]
+    descr = (
+        "It's hard to imagine a world without A Light in the Attic. This"
+        " now-classic collection of poetry and drawings from Shel Silverstein"
+        " celebrates its 20th anniversary with this special edition."
+        " Silverstein's humorous and creative verse can amuse the dowdiest of"
+        " readers. Lemon-faced adults and fidgety kids sit still and read"
+        " these rhythmic words and laugh and smile and love th It's hard to"
+        " imagine a world without A Light in the Attic. This now-classic"
+        " collection of poetry and drawings from Shel Silverstein celebrates"
+        " its 20th anniversary with this special edition. Silverstein's"
+        " humorous and creative verse can amuse the dowdiest of readers."
+        " Lemon-faced adults and fidgety kids sit still and read these"
+        " rhythmic words and laugh and smile and love that Silverstein. Need"
+        " proof of his genius? RockabyeRockabye baby, in the treetopDon't you"
+        " know a treetopIs no safe place to rock?And who put you up there,And"
+        " your cradle, too?Baby, I think someone down here'sGot it in for you."
+        " Shel, you never sounded so good. ...more"
+    )
+    assert product == {
+        "url": str(url),
+        "additionalProperties": [
+            {"name": "UPC", "value": "a897fe39b1053632"},
+            {"name": "Product Type", "value": "Books"},
+            {"name": "Price (excl. tax)", "value": "£51.77"},
+            {"name": "Price (incl. tax)", "value": "£51.77"},
+            {"name": "Tax", "value": "£0.00"},
+            {"name": "Availability", "value": "In stock (22 available)"},
+            {"name": "Number of reviews", "value": "0"},
+        ],
+        "aggregateRating": {"bestRating": 5.0, "ratingValue": 3},
+        "availability": "InStock",
+        "breadcrumbs": [
+            {"name": "Home", "url": str(url.join(URL("/")))},
+            {
+                "name": "Arts & Creativity",
+                "url": str(url.join(URL("/category/1000"))),
+            },
+            {"name": "Poetry", "url": str(url.join(URL("/category/23")))},
+            {"name": "A Light in the Attic"},
+        ],
+        "currencyRaw": "£",
+        "description": descr,
+        "descriptionHtml": f"<article>\n\n<p>{descr}</p>\n\n</article>",
+        "metadata": {
+            "dateDownloaded": product["metadata"]["dateDownloaded"],
+            "probability": 1.0,
+        },
+        "name": "A Light in the Attic",
+        "price": "51.77",
+        "productId": "1000",
+        "sku": "a897fe39b1053632",
+    }
+
+
+async def test_extract_product_list(zyte_api_client, ecommerce_website):
+    url = ecommerce_website.make_url("/category/11")
+    response_data = await zyte_api_client.get(
+        {
+            "url": str(url),
+            "httpResponseBody": True,
+            "productList": True,
+        },
+    )
+
+    assert "httpResponseBody" in response_data
+    text = b64decode(response_data["httpResponseBody"]).decode("utf-8")
+    assert "<h1>Children&#39;s</h1>" in text
+
+    assert "productList" in response_data
+    product_list = response_data["productList"]
+    products = [
+        ("122", "Are We There Yet?", "10.66"),
+        ("975", "Birdsong: A Story in Pictures", "54.64"),
+        ("13", "Charlie and the Chocolate Factory (Charlie Bucket #1)", "22.85"),
+        ("142", "Counting Thyme", "10.62"),
+        (
+            "99",
+            "Diary of a Minecraft Zombie Book 1: A Scare of a Dare (An Unofficial Minecraft Book)",
+            "52.88",
+        ),
+        ("165", "Green Eggs and Ham (Beginner Books B-16)", "10.79"),
+        ("168", "Horrible Bear!", "37.52"),
+        ("817", "Little Red", "13.47"),
+        ("714", "Luis Paints the World", "53.95"),
+        ("32", "Matilda", "28.34"),
+    ]
+    assert product_list == {
+        "url": str(url),
+        "breadcrumbs": [
+            {"name": "Home", "url": str(url.join(URL("/")))},
+            {
+                "name": "Children's",
+            },
+        ],
+        "categoryName": "Children's",
+        "products": [
+            {
+                "currencyRaw": "£",
+                "name": product[1],
+                "price": product[2],
+                "productId": product[0],
+                "url": str(url.join(URL(f"/product/{product[0]}"))),
+            }
+            for product in products
+        ],
+        "paginationNext": {
+            "text": "Next →",
+            "url": str(url.join(URL("/category/11?page=2"))),
+        },
+        "pageNumber": 1,
+        "metadata": {"dateDownloaded": product_list["metadata"]["dateDownloaded"]},
+    }
+
+
+async def test_extract_product_nav(zyte_api_client, ecommerce_website):
+    url = ecommerce_website.make_url("/category/11")
+    response_data = await zyte_api_client.get(
+        {
+            "url": str(url),
+            "httpResponseBody": True,
+            "productNavigation": True,
+        },
+    )
+
+    assert "httpResponseBody" in response_data
+    text = b64decode(response_data["httpResponseBody"]).decode("utf-8")
+    assert "<h1>Children&#39;s</h1>" in text
+
+    assert "productNavigation" in response_data
+    product_navigation = response_data["productNavigation"]
+    subcats = [
+        ("20", "New Adult"),
+        ("21", "Young Adult"),
+    ]
+    products = [
+        ("122", "Are We There Yet?"),
+        ("975", "Birdsong: A Story in Pictures"),
+        ("13", "Charlie and the Chocolate Factory (Charlie Bucket #1)"),
+        ("142", "Counting Thyme"),
+        (
+            "99",
+            "Diary of a Minecraft Zombie Book 1: A Scare of a Dare (An Unofficial Minecraft Book)",
+        ),
+        ("165", "Green Eggs and Ham (Beginner Books B-16)"),
+        ("168", "Horrible Bear!"),
+        ("817", "Little Red"),
+        ("714", "Luis Paints the World"),
+        ("32", "Matilda"),
+    ]
+    assert product_navigation == {
+        "url": str(url),
+        "categoryName": "Children's",
+        "items": [
+            {
+                "url": str(url.join(URL(f"/product/{product[0]}"))),
+                "method": "GET",
+                "name": product[1],
+            }
+            for product in products
+        ],
+        "nextPage": {
+            "url": str(url.join(URL("/category/11?page=2"))),
+            "method": "GET",
+        },
+        "subCategories": [
+            {
+                "url": str(url.join(URL(f"/category/{subcat[0]}"))),
+                "method": "GET",
+                "name": subcat[1],
+            }
+            for subcat in subcats
+        ],
+        "pageNumber": 1,
+        "metadata": {
+            "dateDownloaded": product_navigation["metadata"]["dateDownloaded"]
+        },
+    }

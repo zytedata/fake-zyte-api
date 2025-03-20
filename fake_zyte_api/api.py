@@ -7,6 +7,11 @@ import aiohttp
 from itemadapter import ItemAdapter
 from web_poet import HttpResponse
 from zyte_common_items import ZyteItemAdapter
+from zyte_test_websites.ecommerce.extraction import (
+    TestProductListPage,
+    TestProductNavigationPage,
+    TestProductPage,
+)
 from zyte_test_websites.jobs.extraction import (
     TestJobPostingNavigationPage,
     TestJobPostingPage,
@@ -36,18 +41,19 @@ async def handle_request(request_data: dict[str, Any]) -> dict[str, Any]:
     if "browserHtml" in request_data:
         response_data["browserHtml"] = website_response_body.decode(resp.get_encoding())
 
-    if "jobPostingNavigation" in request_data:
-        web_poet_response = HttpResponse(url, website_response_body)
-        job_posting_nav_page = TestJobPostingNavigationPage(web_poet_response)
-        job_posting_navigation = await job_posting_nav_page.to_item()
-        response_data["jobPostingNavigation"] = ItemAdapter(
-            job_posting_navigation
-        ).asdict()
+    pages = {
+        "product": TestProductPage,
+        "productList": TestProductListPage,
+        "productNavigation": TestProductNavigationPage,
+        "jobPosting": TestJobPostingPage,
+        "jobPostingNavigation": TestJobPostingNavigationPage,
+    }
 
-    if "jobPosting" in request_data:
-        web_poet_response = HttpResponse(url, website_response_body)
-        job_posting_page = TestJobPostingPage(web_poet_response)
-        job_posting = await job_posting_page.to_item()
-        response_data["jobPosting"] = ItemAdapter(job_posting).asdict()
+    for key, page in pages.items():
+        if key in request_data:
+            web_poet_response = HttpResponse(url, website_response_body)
+            page_instance = page(web_poet_response)
+            item = await page_instance.to_item()
+            response_data[key] = ItemAdapter(item).asdict()
 
     return response_data
