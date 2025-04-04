@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
+from zyte_test_websites.articles.app import make_app as make_test_articles_website
 from zyte_test_websites.ecommerce.app import make_app as make_test_ecommerce_website
 from zyte_test_websites.jobs.app import make_app as make_test_job_website
 
@@ -37,4 +38,10 @@ async def jobs_website(aiohttp_server: AiohttpServer) -> TestServer:
 @pytest.fixture
 async def ecommerce_website(aiohttp_server: AiohttpServer) -> TestServer:
     app = make_test_ecommerce_website()
+    return await aiohttp_server(app)
+
+
+@pytest.fixture
+async def articles_website(aiohttp_server: AiohttpServer) -> TestServer:
+    app = make_test_articles_website()
     return await aiohttp_server(app)
