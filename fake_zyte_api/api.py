@@ -7,6 +7,10 @@ import aiohttp
 from itemadapter import ItemAdapter
 from web_poet import HttpResponse
 from zyte_common_items import ZyteItemAdapter
+from zyte_test_websites.articles.extraction import (
+    TestArticleNavigationPage,
+    TestArticlePage,
+)
 from zyte_test_websites.ecommerce.extraction import (
     TestProductListPage,
     TestProductNavigationPage,
@@ -47,6 +51,8 @@ async def handle_request(request_data: dict[str, Any]) -> dict[str, Any]:
         "productNavigation": TestProductNavigationPage,
         "jobPosting": TestJobPostingPage,
         "jobPostingNavigation": TestJobPostingNavigationPage,
+        "article": TestArticlePage,
+        "articleNavigation": TestArticleNavigationPage,
     }
 
     for key, page in pages.items():
