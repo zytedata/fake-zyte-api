@@ -12,7 +12,7 @@ dependencies = [
     "itemadapter >= 0.8.0",
     "web-poet >= 0.14.0",
     "zyte-common-items >= 0.24.0",
-    "zyte-test-websites @ git+https://github.com/zytedata/zyte-test-websites@ec1ebb0",
+    "zyte-test-websites @ git+https://github.com/zytedata/zyte-test-websites@c48564f",
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
